@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WSU Class Advisor</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { text-align: center; }
+    #answer { white-space: pre-wrap; margin-top: 1rem; background: #f5f5f5; padding: 1rem; border-radius: 4px; }
+    input, button { width: 100%; padding: .5rem; font-size: 1rem; margin-top: .5rem; }
+  </style>
+</head>
+<body>
+  <h1>WSU Course Advisor</h1>
+  <p>Ask me for advice on choosing classes at WSU:</p>
+  <input id="question" placeholder="e.g. What math do I need to transfer as a junior in Software Engineering?" />
+  <button id="ask">Ask</button>
+
+  <div id="answer" style="display:none"></div>
+
+  <script>
+    document.getElementById('ask').onclick = async () => {
+      const q = document.getElementById('question').value.trim();
+      if (!q) return alert('Please enter a question.');
+      const ansDiv = document.getElementById('answer');
+      ansDiv.style.display = 'block';
+      ansDiv.textContent = 'Thinking…';
+      try {
+        const res = await fetch('/api/query', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ question: q })
+        });
+        const { answer } = await res.json();
+        ansDiv.textContent = answer;
+      } catch (e) {
+        ansDiv.textContent = 'Error: '+e.message;
+      }
+    };
+  </script>
+</body>
+</html>
